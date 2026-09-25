@@ -3,92 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JBY Series Tools - Hub Utility Digital</title>
+  <title>JBY Series Tools - Dashboard Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-color: #0b0f19;
+      --bg-dark: #0b0f19;
       --card-bg: #111827;
-      --card-border: #1f293d;
-      --text-main: #ffffff;
+      --card-border: #1f2937;
+      --card-hover-border: #374151;
+      --text-main: #f9fafb;
       --text-muted: #9ca3af;
-      --purple-accent: #8b5cf6;
-      --blue-accent: #3b82f6;
-      --green-accent: #10b981;
-      --orange-accent: #f97316;
-      --pink-accent: #ec4899;
-      --cyan-accent: #06b6d4;
+      --accent-purple: #6366f1;
+      --accent-purple-hover: #4f46e5;
+      --accent-green: #10b981;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
+      background-color: var(--bg-dark);
       color: var(--text-main);
-      line-height: 1.5;
-      padding-bottom: 60px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
+      padding: 20px 40px;
       display: flex;
       align-items: center;
-      padding: 20px 5%;
+      justify-content: space-between;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    .brand {
+    .logo {
       display: flex;
       align-items: center;
       gap: 10px;
       font-weight: 800;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      color: #eab308;
+    }
+
+    main {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 60px 20px;
+      flex: 1;
     }
 
     .hero {
       text-align: center;
-      padding: 60px 20px 40px;
-      max-width: 800px;
-      margin: 0 auto;
+      margin-bottom: 60px;
     }
 
     .hero h1 {
-      font-size: 2.8rem;
-      font-weight: 900;
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 12px;
       letter-spacing: -1px;
-      margin-bottom: 15px;
     }
 
     .hero h1 span {
-      background: linear-gradient(135deg, #a78bfa, #3b82f6);
+      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
 
     .hero p {
       color: var(--text-muted);
-      font-size: 1rem;
+      font-size: 1.05rem;
     }
 
     .section-title {
-      max-width: 1100px;
-      margin: 20px auto;
-      padding: 0 20px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
+      text-transform: uppercase;
       letter-spacing: 1.5px;
       color: var(--text-muted);
+      margin-bottom: 24px;
     }
 
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    .grid {
+    .tools-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
     }
 
     .card {
@@ -96,139 +107,138 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 24px;
-      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: transform 0.2s ease, border-color 0.2s ease;
+      position: relative;
+      transition: all 0.2s ease-in-out;
     }
 
     .card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(255, 255, 255, 0.2);
+      border-color: var(--card-hover-border);
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(99, 102, 241, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
     }
 
     .badge {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background-color: rgba(16, 185, 129, 0.1);
-      color: var(--green-accent);
-      font-size: 0.7rem;
+      font-size: 0.72rem;
       font-weight: 700;
       padding: 4px 10px;
       border-radius: 20px;
       display: flex;
       align-items: center;
       gap: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-green);
       border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
-    .badge::before {
-      content: "";
+    .badge-dot {
       width: 6px;
       height: 6px;
-      background-color: var(--green-accent);
+      background-color: var(--accent-green);
       border-radius: 50%;
     }
 
-    .card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      background-color: rgba(255, 255, 255, 0.05);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.3rem;
-      margin-bottom: 20px;
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
     }
 
-    .card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 8px; }
-    .card-desc { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 24px; }
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
 
     .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
       width: 100%;
-      padding: 12px 0;
+      padding: 12px;
       border-radius: 10px;
+      border: none;
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      cursor: pointer;
       text-decoration: none;
-      color: #fff;
+      text-align: center;
+      display: inline-block;
+      transition: background 0.2s;
     }
 
-    .btn-purple { background-color: #8b5cf6; }
-    .btn-blue   { background-color: #3b82f6; }
-    .btn-green  { background-color: #10b981; }
-    .btn-orange { background-color: #f97316; }
-    .btn-pink   { background-color: #ec4899; }
-    .btn-indigo { background-color: #6366f1; }
-    .btn-red    { background-color: #ef4444; }
-    .btn-cyan   { background-color: #06b6d4; }
+    .btn-purple {
+      background-color: var(--accent-purple);
+      color: white;
+    }
+
+    .btn-purple:hover {
+      background-color: var(--accent-purple-hover);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">⚡ JBY Series Tools</div>
+    <div class="logo">
+      <span class="logo-icon">⚡</span> JBY Series Tools
+    </div>
   </header>
 
-  <section class="hero">
-    <h1>Selamat Datang di<br><span>JBY Series Tools</span></h1>
-    <p>Kumpulan tools digital dan otomasi cepat langsung dari browser.</p>
-  </section>
-
-  <div class="section-title">TOOLS TERSEDIA</div>
-
-  <div class="container">
-    <div class="grid">
-
-      <div class="card">
-        <div class="badge">AKTIF</div>
-        <div class="card-icon">⚡</div>
-        <div>
-          <h3 class="card-title">Shopee Link Cloaker</h3>
-          <p class="card-desc">Bypass filter in-app browser WA untuk affiliate link tanpa error Oops.</p>
-        </div>
-        <a href="https://cdn.videimg.com/sjnBYhQR9.mp4" class="btn btn-purple">⚡ Buka Cloaker</a>
-      </div>
-
-      <div class="card">
-        <div class="badge">AKTIF</div>
-        <div class="card-icon">🔍</div>
-        <div>
-          <h3 class="card-title">Facebook Checker</h3>
-          <p class="card-desc">Cek akun Facebook live/dead secara massal via UID/Cookie.</p>
-        </div>
-        <a href="#" class="btn btn-blue">🔍 Buka FB Checker</a>
-      </div>
-
-      <div class="card">
-        <div class="badge">AKTIF</div>
-        <div class="card-icon">🔑</div>
-        <div>
-          <h3 class="card-title">2FA Authenticator</h3>
-          <p class="card-desc">Generate kode TOTP 2FA secara instan dengan auto-refresh.</p>
-        </div>
-        <a href="#" class="btn btn-green">🔑 Buka 2FA Auth</a>
-      </div>
-
-      <div class="card">
-        <div class="badge">AKTIF</div>
-        <div class="card-icon">✉️</div>
-        <div>
-          <h3 class="card-title">Gmail Checker</h3>
-          <p class="card-desc">Cek status akun Gmail massal (live, not exist, unknown).</p>
-        </div>
-        <a href="#" class="btn btn-orange">✉️ Buka Gmail Checker</a>
-      </div>
-
+  <main>
+    <div class="hero">
+      <h1>Selamat Datang di<br><span>JBY Series Tools</span></h1>
+      <p>Kumpulan tools digital dan otomasi cepat langsung dari browser.</p>
     </div>
-  </div>
+
+    <div class="section-title">TOOLS TERSEDIA</div>
+
+    <div class="tools-grid">
+      <!-- Shortlink & Cloaker Tool -->
+      <div class="card">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🔗</div>
+            <div class="badge">
+              <span class="badge-dot"></span> AKTIF
+            </div>
+          </div>
+          <h3 class="card-title">Shortlink & Cloaker</h3>
+          <p class="card-desc">Kelola link pendek kustom, bypass browser WhatsApp/Shopee, dan upload video preview otomatis.</p>
+        </div>
+        <a href="https://cdn.videimg.com" class="btn btn-purple">⚡ Buka Kelola Shortlink</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 JBY Series Tools. All rights reserved.
+  </footer>
 
 </body>
 </html>
