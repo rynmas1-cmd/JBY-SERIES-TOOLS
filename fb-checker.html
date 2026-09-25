@@ -77,10 +77,31 @@
       font-size: 0.8rem;
     }
 
-    .btn-group {
+    .controls-row {
       display: flex;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
       margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .speed-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    select {
+      background: rgba(3, 7, 18, 0.9);
+      border: 1px solid var(--border-cyan);
+      color: var(--neon-cyan);
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-family: 'Fira Code', monospace;
+      font-weight: 700;
+      cursor: pointer;
     }
 
     button {
@@ -99,6 +120,13 @@
       background: var(--neon-cyan);
       color: var(--bg);
       box-shadow: 0 0 15px var(--neon-cyan);
+    }
+
+    button:disabled {
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .counter {
@@ -144,8 +172,18 @@
 
     <textarea id="listData" placeholder="Masukkan Cookie / Access Token / UID (1 per baris)..."></textarea>
 
-    <div class="btn-group">
-      <button onclick="startCheck()">⚡ MULAI CEK</button>
+    <div class="controls-row">
+      <button id="btnStart" onclick="startCheck()">⚡ MULAI CEK</button>
+
+      <div class="speed-selector">
+        <label for="concurrencySelect">KECEPATAN (THREADS):</label>
+        <select id="concurrencySelect">
+          <option value="5">5 / Detik (Lambat - Aman)</option>
+          <option value="10" selected>10 / Detik (Sedang)</option>
+          <option value="25">25 / Detik (Cepat)</option>
+          <option value="50">50 / Detik (Ultra Cepat)</option>
+        </select>
+      </div>
     </div>
 
     <div class="counter">
@@ -167,20 +205,16 @@
   </div>
 
   <script>
-    // Fungsi mengekstrak parameter dari string Cookie
     function parseCookieString(raw) {
       let uid = null;
       let token = null;
 
-      // Cek c_user
       const cUserMatch = raw.match(/c_user=([0-9]+)/);
       if (cUserMatch) uid = cUserMatch[1];
 
-      // Cek access_token jika ada
       const tokenMatch = raw.match(/access_token=(EAAA[a-zA-Z0-9]+)/);
       if (tokenMatch) token = tokenMatch[1];
 
-      // Jika formatnya hanya UID saja/UID|PASS
       if (!uid) {
         const firstPart = raw.split('|')[0].trim();
         if (/^[0-9]+$/.test(firstPart)) {
@@ -194,7 +228,6 @@
     async function checkFBItem(item) {
       const { uid, token } = parseCookieString(item);
 
-      // 1. Jika ada Access Token, prioritaskan cek token me
       if (token) {
         try {
           const res = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${token}`);
@@ -203,7 +236,6 @@
         } catch (e) {}
       }
 
-      // 2. Jika ada UID / c_user, cek via Graph API Picture & Profile Status
       if (uid) {
         try {
           const res = await fetch(`https://graph.facebook.com/${uid}/picture?type=normal&redirect=false`);
@@ -222,7 +254,12 @@
       if (!rawText) return alert("Masukkan data cookie / UID terlebih dahulu!");
 
       const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      
+      const concurrencyLimit = parseInt(document.getElementById('concurrencySelect').value);
+      const btn = document.getElementById('btnStart');
+
+      btn.disabled = true;
+      btn.innerText = 'PROSES...';
+
       document.getElementById('txtTotal').innerText = lines.length;
       document.getElementById('txtLive').innerText = 0;
       document.getElementById('txtDead').innerText = 0;
@@ -231,20 +268,38 @@
 
       let countLive = 0;
       let countDead = 0;
+      let currentIndex = 0;
 
-      for (let line of lines) {
-        const isLive = await checkFBItem(line);
+      // Pool pekerja paralel
+      async function worker() {
+        while (currentIndex < lines.length) {
+          const index = currentIndex++;
+          const line = lines[index];
+          
+          const isLive = await checkFBItem(line);
 
-        if (isLive) {
-          countLive++;
-          document.getElementById('txtLive').innerText = countLive;
-          document.getElementById('boxLive').innerHTML += `<div>[LIVE] ${line}</div>`;
-        } else {
-          countDead++;
-          document.getElementById('txtDead').innerText = countDead;
-          document.getElementById('boxDead').innerHTML += `<div>[DEAD] ${line}</div>`;
+          if (isLive) {
+            countLive++;
+            document.getElementById('txtLive').innerText = countLive;
+            document.getElementById('boxLive').innerHTML += `<div>[LIVE] ${line}</div>`;
+          } else {
+            countDead++;
+            document.getElementById('txtDead').innerText = countDead;
+            document.getElementById('boxDead').innerHTML += `<div>[DEAD] ${line}</div>`;
+          }
         }
       }
+
+      // Jalankan worker secara paralel sesuai batas thread yang dipilih
+      const workers = [];
+      for (let i = 0; i < Math.min(concurrencyLimit, lines.length); i++) {
+        workers.push(worker());
+      }
+
+      await Promise.all(workers);
+
+      btn.disabled = false;
+      btn.innerText = '⚡ MULAI CEK';
     }
   </script>
 </body>
