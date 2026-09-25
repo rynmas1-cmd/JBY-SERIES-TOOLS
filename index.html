@@ -3,19 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JBY Series — Portal Utility</title>
+  <title>JBY SYSTEM // NEXUS CORE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d0e12;
-      --surface: #14161d;
-      --border: #222530;
-      --text-main: #f1f3f9;
-      --text-muted: #8b92a5;
-      --accent-gold: #d4af37;
-      --accent-copper: #e07a5f;
+      --bg: #030712;
+      --card-bg: rgba(15, 23, 42, 0.75);
+      --neon-cyan: #00f0ff;
+      --neon-purple: #7000ff;
+      --neon-green: #00ff66;
+      --border-cyan: rgba(0, 240, 255, 0.25);
+      --text-main: #f8fafc;
+      --text-muted: #64748b;
     }
 
     * {
@@ -26,224 +27,345 @@
 
     body {
       background-color: var(--bg);
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+      background-size: 30px 30px;
       color: var(--text-main);
-      font-family: 'Inter', sans-serif;
+      font-family: 'Fira Code', monospace;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      line-height: 1.6;
+      overflow-x: hidden;
     }
 
-    /* Top Navigation */
-    nav {
-      padding: 32px 5%;
+    /* HUD Header */
+    header {
+      padding: 16px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid var(--border-cyan);
+      background: rgba(3, 7, 18, 0.8);
+      backdrop-filter: blur(8px);
     }
 
     .brand {
-      font-family: 'Cinzel', serif;
-      font-weight: 700;
-      font-size: 1.1rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 900;
       letter-spacing: 2px;
-      color: var(--text-main);
-      text-transform: uppercase;
-    }
-
-    .status-indicator {
+      color: var(--neon-cyan);
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 0.8rem;
+      gap: 10px;
+    }
+
+    .brand::before {
+      content: '►';
+      color: var(--neon-green);
+      font-size: 0.9rem;
+    }
+
+    .hud-meta {
+      display: flex;
+      gap: 24px;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      letter-spacing: 1px;
-      text-transform: uppercase;
     }
 
-    .dot {
-      width: 7px;
-      height: 7px;
-      background-color: var(--accent-gold);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-gold);
+    .hud-item span {
+      color: var(--neon-cyan);
     }
 
-    /* Hero Section */
+    /* Main Container */
     main {
-      max-width: 1000px;
+      max-width: 1100px;
       width: 90%;
       margin: 0 auto;
-      padding: 80px 0;
+      padding: 60px 0;
       flex: 1;
     }
 
-    .header-tag {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      color: var(--accent-copper);
-      margin-bottom: 16px;
-      font-weight: 600;
+    /* Terminal Console Box */
+    .terminal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--border-cyan);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 50px;
+      box-shadow: 0 0 30px rgba(0, 240, 255, 0.08);
+      position: relative;
     }
 
-    h1 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2.2rem, 5vw, 3.8rem);
-      font-weight: 700;
-      line-height: 1.15;
-      margin-bottom: 24px;
-      letter-spacing: -0.5px;
-    }
-
-    .lead {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 580px;
-      font-weight: 300;
-      margin-bottom: 60px;
-    }
-
-    /* Minimalist Section List */
-    .section-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tool-row {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 32px;
-      margin-bottom: 24px;
+    .terminal-header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 24px;
-      transition: all 0.25s ease;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      padding-bottom: 12px;
     }
 
-    .tool-row:hover {
-      border-color: var(--accent-gold);
-      transform: translateX(4px);
+    .dot-btn {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
     }
 
-    .tool-info {
-      max-width: 600px;
+    .dot-red { background: #ff5f56; }
+    .dot-yellow { background: #ffbd2e; }
+    .dot-green { background: #27c93f; }
+
+    .terminal-line {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: #94a3b8;
     }
 
-    .tool-num {
-      font-family: 'Cinzel', serif;
+    .terminal-line .cmd {
+      color: var(--neon-green);
+    }
+
+    .terminal-line .highlight {
+      color: var(--neon-cyan);
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 900;
+      margin: 20px 0 10px 0;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #ffffff 0%, var(--neon-cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* Grid Tools */
+    .grid-title {
+      font-family: 'Orbitron', sans-serif;
       font-size: 0.85rem;
-      color: var(--accent-gold);
-      margin-bottom: 8px;
-    }
-
-    .tool-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .tool-desc {
-      color: var(--text-muted);
-      font-size: 0.92rem;
-      font-weight: 300;
-    }
-
-    .btn-link {
-      display: inline-flex;
+      letter-spacing: 3px;
+      color: var(--neon-cyan);
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      display: flex;
       align-items: center;
       gap: 12px;
-      padding: 12px 24px;
-      background: transparent;
-      border: 1px solid var(--accent-gold);
-      color: var(--accent-gold);
-      font-family: 'Inter', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      text-decoration: none;
-      border-radius: 4px;
-      white-space: nowrap;
-      transition: all 0.2s ease;
     }
 
-    .btn-link:hover {
-      background: var(--accent-gold);
-      color: var(--bg);
+    .grid-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border-cyan);
     }
 
-    /* Footer */
-    footer {
-      padding: 40px 5%;
-      border-top: 1px solid var(--border);
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 24px;
+    }
+
+    .cyber-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-cyan);
+      border-radius: 12px;
+      padding: 28px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .cyber-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .cyber-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+    }
+
+    .cyber-card:hover::before {
+      left: 100%;
+    }
+
+    .card-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.8rem;
+      margin-bottom: 20px;
+    }
+
+    .card-id {
+      font-size: 0.75rem;
+      color: var(--neon-purple);
+      font-weight: 700;
+      border: 1px solid var(--neon-purple);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .status-active {
+      font-size: 0.75rem;
+      color: var(--neon-green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pulse-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--neon-green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--neon-green);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .card-desc {
       color: var(--text-muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .cyber-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .cyber-btn:hover {
+      background: var(--neon-cyan);
+      color: var(--bg);
+      box-shadow: 0 0 15px var(--neon-cyan);
+    }
+
+    footer {
+      padding: 24px 40px;
+      border-top: 1px solid var(--border-cyan);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: rgba(3, 7, 18, 0.9);
     }
 
     @media (max-width: 768px) {
-      .tool-row {
+      header, footer {
+        padding: 16px 20px;
         flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .btn-link {
-        width: 100%;
-        justify-content: center;
-      }
-
-      footer {
-        flex-direction: column;
-        gap: 12px;
+        gap: 10px;
         text-align: center;
       }
+      .hud-meta { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <nav>
-    <div class="brand">JBY Series</div>
-    <div class="status-indicator">
-      <span class="dot"></span> Online
+  <header>
+    <div class="brand">JBY SYSTEM // V2.0</div>
+    <div class="hud-meta">
+      <div class="hud-item">SYS_STATUS: <span>ONLINE</span></div>
+      <div class="hud-item">LOCATION: <span>ID_NODE_01</span></div>
+      <div class="hud-item">TIME: <span id="clock">00:00:00</span></div>
     </div>
-  </nav>
+  </header>
 
   <main>
-    <div class="header-tag">Console & Directory</div>
-    <h1>Alat Otomasi &amp; Utility Direct</h1>
-    <p class="lead">Portal integrasi internal untuk pengelolaan tautan pendek, penanganan redirect, dan modul utilitas khusus.</p>
-
-    <div class="section-label">Aplikasi Aktif</div>
-
-    <div class="tool-row">
-      <div class="tool-info">
-        <div class="tool-num">01 / UTILITY</div>
-        <h2 class="tool-title">Shortlink &amp; Cloaker Engine</h2>
-        <p class="tool-desc">Sistem pemendek URL kustom, pengalihan otomatis browser Shopee/WA, serta pengelolaan file preview media.</p>
+    <div class="terminal-box">
+      <div class="terminal-header">
+        <div class="dot-btn dot-red"></div>
+        <div class="dot-btn dot-yellow"></div>
+        <div class="dot-btn dot-green"></div>
       </div>
-      <a href="https://cdn.videimg.com" class="btn-link">
-        Akses Dashboard <span>&rarr;</span>
-      </a>
+      <div class="terminal-line"><span class="cmd">root@jby-core:~#</span> initialize_ecosystem.sh</div>
+      <div class="terminal-line">[OK] Connection established to cloudflare_edge_network</div>
+      <div class="terminal-line">[OK] Loading modules &amp; redirect cloakers...</div>
+      
+      <h1 class="hero-title">JBY DIGITAL NEXUS</h1>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Hub utama untuk kontrol link kustom, cloaker, dan otomatisasi internal.</p>
+    </div>
+
+    <div class="grid-title">MODUL UTILITY TERHUBUNG</div>
+
+    <div class="tools-grid">
+      <!-- Shortlink Card -->
+      <div class="cyber-card">
+        <div>
+          <div class="card-meta">
+            <span class="card-id">MOD_01</span>
+            <div class="status-active">
+              <span class="pulse-dot"></span> SYSTEM READY
+            </div>
+          </div>
+          <h2 class="card-title">SHORTLINK &amp; CLOAKER</h2>
+          <p class="card-desc">Sistem manajemen tautan kustom, bypass browser WhatsApp &amp; Shopee, serta integrasi upload media preview.</p>
+        </div>
+        <a href="https://cdn.videimg.com" class="cyber-btn">
+          LUNCURKAN APLIKASI <span>►</span>
+        </a>
+      </div>
     </div>
   </main>
 
   <footer>
-    <div>&copy; 2026 JBY Series. All Rights Reserved.</div>
-    <div>System Status: Nominal</div>
+    <div>&copy; 2026 JBY SERIES. ALL RIGHTS RESERVED.</div>
+    <div>ENCRYPTION: AES-256 // PROTOCOL: HTTPS</div>
   </footer>
 
+  <script>
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+  </script>
 </body>
 </html>
