@@ -74,6 +74,7 @@
       font-family: 'Fira Code', monospace;
       margin-bottom: 20px;
       resize: vertical;
+      font-size: 0.8rem;
     }
 
     .btn-group {
@@ -123,7 +124,8 @@
       border-radius: 6px;
       max-height: 250px;
       overflow-y: auto;
-      font-size: 0.82rem;
+      font-size: 0.75rem;
+      word-break: break-all;
     }
 
     .res-panel.live { border-color: var(--neon-green); color: var(--neon-green); }
@@ -140,7 +142,7 @@
     <a href="index.html" class="nav-back">◄ KEMBALI KE DASHBOARD</a>
     <h1>FACEBOOK LIVE CHECKER</h1>
 
-    <textarea id="listUid" placeholder="Masukkan daftar UID / Email Facebook (1 per baris)..."></textarea>
+    <textarea id="listData" placeholder="Masukkan Cookie / Access Token / UID (1 per baris)..."></textarea>
 
     <div class="btn-group">
       <button onclick="startCheck()">⚡ MULAI CEK</button>
@@ -165,13 +167,63 @@
   </div>
 
   <script>
-    async function startCheck() {
-      const rawText = document.getElementById('listUid').value.trim();
-      if (!rawText) return alert("Masukkan daftar UID terlebih dahulu!");
+    // Fungsi mengekstrak parameter dari string Cookie
+    function parseCookieString(raw) {
+      let uid = null;
+      let token = null;
 
-      const uids = rawText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+      // Cek c_user
+      const cUserMatch = raw.match(/c_user=([0-9]+)/);
+      if (cUserMatch) uid = cUserMatch[1];
+
+      // Cek access_token jika ada
+      const tokenMatch = raw.match(/access_token=(EAAA[a-zA-Z0-9]+)/);
+      if (tokenMatch) token = tokenMatch[1];
+
+      // Jika formatnya hanya UID saja/UID|PASS
+      if (!uid) {
+        const firstPart = raw.split('|')[0].trim();
+        if (/^[0-9]+$/.test(firstPart)) {
+          uid = firstPart;
+        }
+      }
+
+      return { uid, token };
+    }
+
+    async function checkFBItem(item) {
+      const { uid, token } = parseCookieString(item);
+
+      // 1. Jika ada Access Token, prioritaskan cek token me
+      if (token) {
+        try {
+          const res = await fetch(`https://graph.facebook.com/v18.0/me?access_token=${token}`);
+          const data = await res.json();
+          if (data && data.id && !data.error) return true;
+        } catch (e) {}
+      }
+
+      // 2. Jika ada UID / c_user, cek via Graph API Picture & Profile Status
+      if (uid) {
+        try {
+          const res = await fetch(`https://graph.facebook.com/${uid}/picture?type=normal&redirect=false`);
+          const data = await res.json();
+          if (data && data.data && data.data.url && !data.error) {
+            return true;
+          }
+        } catch (e) {}
+      }
+
+      return false;
+    }
+
+    async function startCheck() {
+      const rawText = document.getElementById('listData').value.trim();
+      if (!rawText) return alert("Masukkan data cookie / UID terlebih dahulu!");
+
+      const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
       
-      document.getElementById('txtTotal').innerText = uids.length;
+      document.getElementById('txtTotal').innerText = lines.length;
       document.getElementById('txtLive').innerText = 0;
       document.getElementById('txtDead').innerText = 0;
       document.getElementById('boxLive').innerHTML = '';
@@ -180,26 +232,17 @@
       let countLive = 0;
       let countDead = 0;
 
-      for (let uidRaw of uids) {
-        const uid = uidRaw.split('|')[0];
+      for (let line of lines) {
+        const isLive = await checkFBItem(line);
 
-        try {
-          const res = await fetch(`https://graph.facebook.com/${uid}/picture?type=normal&redirect=false`);
-          const data = await res.json();
-
-          if (data && data.data && !data.error) {
-            countLive++;
-            document.getElementById('txtLive').innerText = countLive;
-            document.getElementById('boxLive').innerHTML += `<div>[LIVE] ${uidRaw}</div>`;
-          } else {
-            countDead++;
-            document.getElementById('txtDead').innerText = countDead;
-            document.getElementById('boxDead').innerHTML += `<div>[DEAD] ${uidRaw}</div>`;
-          }
-        } catch (e) {
+        if (isLive) {
+          countLive++;
+          document.getElementById('txtLive').innerText = countLive;
+          document.getElementById('boxLive').innerHTML += `<div>[LIVE] ${line}</div>`;
+        } else {
           countDead++;
           document.getElementById('txtDead').innerText = countDead;
-          document.getElementById('boxDead').innerHTML += `<div>[DEAD] ${uidRaw}</div>`;
+          document.getElementById('boxDead').innerHTML += `<div>[DEAD] ${line}</div>`;
         }
       }
     }
